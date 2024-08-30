@@ -22,3 +22,7 @@ The connection was not closed by the application and is garbage collected [90018
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:690)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
 	... 16 more
+2024-08-30 16:01:24.692547-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Error de Sintaxis en sentencia SQL "[*]FECHA_CREACION EMPLEADO"
+Syntax error in SQL statement "[*]FECHA_CREACION EMPLEADO"; SQL statement:
+FECHA_CREACION EMPLEADO [42000-224]
