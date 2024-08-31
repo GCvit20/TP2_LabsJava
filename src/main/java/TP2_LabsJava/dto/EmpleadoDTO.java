@@ -21,5 +21,4 @@ public class EmpleadoDTO {
     private LocalDate fechaNacimiento;
     private LocalDate fechaIngreso;
     private LocalDate fechaCreacion;
-
 }

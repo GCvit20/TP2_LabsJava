@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Carpeta de prueba ###
+/src/main/java/TP2_LabsJava/empleadoConfig/
+

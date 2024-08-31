@@ -5,6 +5,6 @@ import TP2_LabsJava.entity.Empleado;
 public interface IEmpleadoService {
 
      Empleado agregarEmpleado(Empleado empleado);
-     boolean esEmpleadoPorNumeroDocumento(Integer nroDocumento);
-     boolean esEmpleadoPorEmail(String email);
+     //boolean esEmpleadoPorNumeroDocumento(Integer nroDocumento);
+     //boolean esEmpleadoPorEmail(String email);
 }
