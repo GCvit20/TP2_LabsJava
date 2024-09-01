@@ -125,4 +125,13 @@ public class EmpleadoValidator {
     }
 
 
+    public void validarEmpleadoExistente(Long id) {
+        Optional<Empleado> empleado = repository.findById(id);
+
+        if (empleado.isEmpty()) {
+            throw new IdEmpleadoInvalidoException(id);
+        }
+    }
+
+
 }
