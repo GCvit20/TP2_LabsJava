@@ -1,10 +1,10 @@
 package TP2_LabsJava.exceptions;
 
-public class EmailRepetidoInvalidoException extends RuntimeException {
+public class EmailDuplicadoException extends RuntimeException {
 
   private String email;
 
-  public EmailRepetidoInvalidoException(String email) {
+  public EmailDuplicadoException(String email) {
     this.email = email;
   }
 

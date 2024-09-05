@@ -1,5 +1,6 @@
 package TP2_LabsJava.dto;
 
+import TP2_LabsJava.entity.Empleado;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,4 +22,17 @@ public class EmpleadoDTO {
     private LocalDate fechaNacimiento;
     private LocalDate fechaIngreso;
     private LocalDate fechaCreacion;
+
+    public Empleado toEntity() {
+        Empleado empleado = new Empleado();
+        empleado.setId(this.getId());
+        empleado.setNombre(this.getNombre());
+        empleado.setApellido(this.getApellido());
+        empleado.setEmail(this.getEmail());
+        empleado.setNroDocumento((this.getNroDocumento()));
+        empleado.setFechaNacimiento(this.getFechaNacimiento());
+        empleado.setFechaIngreso(this.getFechaIngreso());
+        empleado.setFechaCreacion(this.getFechaCreacion());
+        return empleado;
+    }
 }

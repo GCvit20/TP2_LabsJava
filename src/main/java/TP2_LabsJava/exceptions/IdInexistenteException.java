@@ -1,10 +1,10 @@
 package TP2_LabsJava.exceptions;
 
-public class IdEmpleadoInvalidoException extends RuntimeException {
+public class IdInexistenteException extends RuntimeException {
 
     private Long id;
 
-    public IdEmpleadoInvalidoException(Long id) {
+    public IdInexistenteException(Long id) {
         this.id = id;
     }
 

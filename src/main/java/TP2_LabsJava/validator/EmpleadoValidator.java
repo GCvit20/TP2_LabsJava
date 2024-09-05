@@ -1,8 +1,11 @@
 package TP2_LabsJava.validator;
 
+import TP2_LabsJava.dto.EmpleadoDTO;
+import TP2_LabsJava.entity.ConceptoLaboral;
 import TP2_LabsJava.entity.Empleado;
 import TP2_LabsJava.exceptions.*;
-import TP2_LabsJava.repository.EmpleadoRepository;
+import TP2_LabsJava.repository.IConceptoLaboralRepository;
+import TP2_LabsJava.repository.IEmpleadoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,13 +17,12 @@ import java.util.regex.Pattern;
 @Component
 public class EmpleadoValidator {
 
-    private EmpleadoRepository repository;
-    private LocalDate fechaActual = LocalDate.now();
+    @Autowired
+    private IEmpleadoRepository empleadopRepository;
 
     @Autowired
-    public EmpleadoValidator(EmpleadoRepository repository) {
-        this.repository = repository;
-    }
+    private IConceptoLaboralRepository conceptoLaboralRepository;
+    private LocalDate fechaActual = LocalDate.now();
 
     public boolean esEdadValida(LocalDate fechaNacimiento) {
         return fechaNacimiento != null && Period.between(fechaNacimiento, LocalDate.now()).getYears() >= 18;
@@ -33,7 +35,7 @@ public class EmpleadoValidator {
     }
 
     public boolean esEmpleadoPorNumeroDocumento(Integer nroDocumento) {
-        Optional<Empleado> empleado = repository.findByNroDocumento(nroDocumento);
+        Optional<Empleado> empleado = empleadopRepository.findByNroDocumento(nroDocumento);
         return empleado.isPresent();
     }
 
@@ -44,7 +46,7 @@ public class EmpleadoValidator {
     }
 
     public boolean esEmpleadoPorEmail(String email) {
-        Optional<Empleado> empleado = repository.findByEmail(email);
+        Optional<Empleado> empleado = empleadopRepository.findByEmail(email);
         return empleado.isPresent();
     }
 
@@ -56,7 +58,7 @@ public class EmpleadoValidator {
 
     public void validarEmail(Empleado empleado) {
         if(esEmpleadoPorEmail(empleado.getEmail())) {
-            throw new EmailRepetidoInvalidoException(empleado.getEmail());
+            throw new EmailDuplicadoException(empleado.getEmail());
         }
         if (!esEmailValido(empleado.getEmail())) {
             throw new FormatoEmailInvalidoException(empleado.getEmail());
@@ -124,14 +126,35 @@ public class EmpleadoValidator {
         }
     }
 
+    public Empleado validarEmpleadoExistente(Long id) {
 
-    public void validarEmpleadoExistente(Long id) {
-        Optional<Empleado> empleado = repository.findById(id);
+        return empleadopRepository.findById(id).orElseThrow(() -> new IdInexistenteException(id));
+    }
 
-        if (empleado.isEmpty()) {
-            throw new IdEmpleadoInvalidoException(id);
+    public ConceptoLaboral validarConceptoLaboralExistente(Long id) {
+
+        return conceptoLaboralRepository.findById(id).orElseThrow(() -> new IdInexistenteException(id));
+    }
+
+    public void validarUnicidadDeNroDocumentoYEmail(EmpleadoDTO empleadoDTO, Long id) {
+        if (empleadoDTO.getNroDocumento() != null) {
+            verificarUnicidadDni(empleadoDTO.getNroDocumento(), id);
+        }
+        if (empleadoDTO.getEmail() != null) {
+            verificarUnicidadEmail(empleadoDTO.getEmail(), id);
         }
     }
 
+    private void verificarUnicidadDni(Integer nroDocumento, Long id) {
+        if (this.empleadopRepository.existsByNroDocumentoAndIdNot(nroDocumento, id)) {
+            throw new NroDocumentoInvalidoException(nroDocumento);
+        }
+    }
+
+    private void verificarUnicidadEmail(String email, Long id) {
+        if (this.empleadopRepository.existsByEmailAndIdNot(email, id)) {
+            throw new EmailDuplicadoException(email);
+        }
+    }
 
 }

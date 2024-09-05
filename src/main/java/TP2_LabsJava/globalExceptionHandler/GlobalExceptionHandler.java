@@ -19,8 +19,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
-    @ExceptionHandler(EmailRepetidoInvalidoException.class)
-    public ResponseEntity<String> handleEmailRepetidoInvalidoException(EmailRepetidoInvalidoException ex) {
+    @ExceptionHandler(EmailDuplicadoException.class)
+    public ResponseEntity<String> handleEmailRepetidoInvalidoException(EmailDuplicadoException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
@@ -54,9 +54,34 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
-    @ExceptionHandler(IdEmpleadoInvalidoException.class)
-    public ResponseEntity<String> handleIdEmpleadoInvalidoException(IdEmpleadoInvalidoException ex) {
+    @ExceptionHandler(IdInexistenteException.class)
+    public ResponseEntity<String> handleIdEmpleadoInvalidoException(IdInexistenteException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(HsTrabajadasObligatoriasException.class)
+    public ResponseEntity<String> handleHsTrabajadasObligatoriasException(HsTrabajadasObligatoriasException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(HsTrabajadasNoObligatoriasException.class)
+    public ResponseEntity<String> handleHsTrabajadasNoObligatoriasException(HsTrabajadasNoObligatoriasException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(EmpleadoNoEncontradoException.class)
+    public ResponseEntity<String> handleEmpleadoNoEncontradoException(EmpleadoNoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ConceptoNoEncontradoException.class)
+    public ResponseEntity<String> handleConceptoNoEncontradoException(ConceptoNoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(RangoHorasException.class)
+    public ResponseEntity<String> handleRangoHorasException(RangoHorasException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
 

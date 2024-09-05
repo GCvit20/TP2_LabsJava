@@ -1,7 +1,7 @@
 package TP2_LabsJava.entity;
 
+import TP2_LabsJava.dto.EmpleadoDTO;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.time.LocalDate;
 
@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="Empleado")
+@Table(name="empleado")
 public class Empleado {
 
     @Id
@@ -34,7 +34,17 @@ public class Empleado {
     @Column(name = "fecha_creacion")
     private LocalDate fechaCreacion;
 
-
-
+    public EmpleadoDTO toDTO() {
+        EmpleadoDTO dto = new EmpleadoDTO();
+        dto.setId(this.getId());
+        dto.setNombre(this.getNombre());
+        dto.setApellido(this.getApellido());
+        dto.setEmail(this.getEmail());
+        dto.setNroDocumento((this.getNroDocumento()));
+        dto.setFechaNacimiento(this.getFechaNacimiento());
+        dto.setFechaIngreso(this.getFechaIngreso());
+        dto.setFechaCreacion(this.getFechaCreacion());
+        return dto;
+    }
 
 }

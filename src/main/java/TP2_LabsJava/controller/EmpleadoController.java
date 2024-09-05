@@ -7,30 +7,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-
 
 @RestController
 @Validated
 @RequestMapping("/empleado")
 public class EmpleadoController {
 
+    @Autowired
     private IEmpleadoService empleadoService;
 
-    @Autowired
-    public EmpleadoController(IEmpleadoService empleadoService) {
-        this.empleadoService = empleadoService;
-    }
-
     @PostMapping
-    public ResponseEntity<?> altaEmpleado(@Valid @RequestBody EmpleadoDTO empleadoDTO) throws URISyntaxException {
+    public ResponseEntity<?> save(@Valid @RequestBody EmpleadoDTO empleadoDTO) throws URISyntaxException {
 
             LocalDate fechaCreacion = LocalDate.now();
 
@@ -48,15 +40,20 @@ public class EmpleadoController {
 
     @GetMapping
     public ResponseEntity<?> findAll() {
-        List<Empleado> empleados = empleadoService.obtenerEmpleados();
-        return ResponseEntity.ok(empleados);
+        List<EmpleadoDTO> empleadosDTO = empleadoService.obtenerEmpleados();
+        return ResponseEntity.ok(empleadosDTO);
     }
 
-    @GetMapping("/{empleadoId}")
-    public ResponseEntity<?> obtenerEmpleadoPorId(@PathVariable Long empleadoId) {
-
-        Empleado empleado = empleadoService.obtenerEmpleadoPorId(empleadoId);
-        return ResponseEntity.ok(empleado);
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<EmpleadoDTO> findAllById(@PathVariable Long id) {
+        EmpleadoDTO empleadoDTO = empleadoService.obtenerEmpleadoPorId(id);
+        return ResponseEntity.ok(empleadoDTO);
     }
 
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody EmpleadoDTO empleadoDTO) {
+
+        EmpleadoDTO updatedEmpleado = empleadoService.update(id, empleadoDTO);
+        return ResponseEntity.ok(updatedEmpleado);
+    }
 }
