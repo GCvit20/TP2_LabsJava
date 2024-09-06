@@ -48,6 +48,12 @@ public class JornadaServiceImpl implements IJornadaService {
         jornadaValidator.validarCantidadHsPorJornada(jornada, empleado);
         jornadaValidator.validarHorasSemanales(jornada, empleado);
         jornadaValidator.validarHorasMensuales(jornada, empleado);
+        jornadaValidator.validarDiaLibreEnFecha(jornada, empleado, conceptoLaboral);
+        jornadaValidator.validarMaximoTurnos(jornada);
+        jornadaValidator.validarDiasLibres(jornada, empleado);
+        jornadaValidator.validarDiasLibresPorMes(jornada, empleado);
+        jornadaValidator.validarNumeroEmpleados(jornada, conceptoLaboral);
+        jornadaValidator.validarJornadaUnicaPorEmpleado(jornada, empleado, conceptoLaboral);
 
         Jornada savedJornada = jornadaRepository.save(jornada);
         return ResponseDTO.from(savedJornada, empleado, conceptoLaboral.getNombre());

@@ -6,20 +6,27 @@ import TP2_LabsJava.entity.Jornada;
 import TP2_LabsJava.exceptions.HsTrabajadasNoObligatoriasException;
 import TP2_LabsJava.exceptions.HsTrabajadasObligatoriasException;
 import TP2_LabsJava.exceptions.RangoHorasException;
+import TP2_LabsJava.repository.IConceptoLaboralRepository;
+import TP2_LabsJava.repository.IEmpleadoRepository;
 import TP2_LabsJava.repository.IJornadaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class JornadaValidator {
 
     @Autowired
     private IJornadaRepository jornadaRepository;
+
+    @Autowired
+    private IEmpleadoRepository empleadoRepository;
+
+    @Autowired
+    private IConceptoLaboralRepository conceptoLaboralRepository;
 
     public void validarCamposObligatorios(Jornada jornada) {
 
@@ -100,4 +107,122 @@ public class JornadaValidator {
         }
     }
 
+    public void validarDiaLibreEnFecha(Jornada jornada, Empleado empleado, ConceptoLaboral conceptoLaboral) {
+
+        List<Jornada> jornadasDelDia = jornadaRepository.findByEmpleadoAndFecha(empleado, jornada.getFecha());
+
+        boolean existeDiaLibre = jornadasDelDia.stream()
+                .anyMatch(j -> "Día Libre".equals(j.getConceptoLaboral().getNombre()));
+
+        boolean existeTurnoNormal = jornadasDelDia.stream()
+                .anyMatch(j -> "Turno Normal".equals(j.getConceptoLaboral().getNombre()));
+
+        boolean existeTurnoExtra = jornadasDelDia.stream()
+                .anyMatch(j -> "Turno Extra".equals(j.getConceptoLaboral().getNombre()));
+
+        if (existeDiaLibre) {
+            throw new IllegalArgumentException("El empleado ingresado cuenta con un día libre en esa fecha.");
+        } else if (Objects.equals(conceptoLaboral.getNombre(), "Día Libre") && (existeTurnoNormal || existeTurnoExtra)) {
+            throw new IllegalArgumentException("El empleado ya cuenta con un turno asignado en esta fecha.");
+        }
+    }
+
+    public void validarMaximoTurnos(Jornada jornada) {
+        Empleado empleado = jornada.getEmpleado();
+        LocalDate fecha = jornada.getFecha();
+
+
+        LocalDate inicioSemana = fecha.with(DayOfWeek.MONDAY);
+        LocalDate finSemana = fecha.with(DayOfWeek.SUNDAY);
+
+        List<Jornada> jornadasDeLaSemana = jornadaRepository.findByEmpleadoAndFechaBetween(empleado, inicioSemana, finSemana);
+
+        long cantidadTurnosExtra = jornadasDeLaSemana.stream()
+                .filter(nuevaJornada -> nuevaJornada.getConceptoLaboral().getNombre().equalsIgnoreCase("Turno Extra"))
+                .count();
+
+        long cantidadTurnosNormales = jornadasDeLaSemana.stream()
+                .filter(nuevaJornada -> nuevaJornada.getConceptoLaboral().getNombre().equalsIgnoreCase("Turno Normal"))
+                .count();
+
+
+        if (cantidadTurnosExtra >= 3) {
+            throw new IllegalArgumentException("El empleado ingresado ya cuenta con 3 turnos extra esta semana.");
+        }
+
+        if (cantidadTurnosNormales >= 5) {
+            throw new IllegalArgumentException("El empleado ingresado ya cuenta con 5 turnos normales esta semana.");
+        }
+    }
+
+    public void validarDiasLibres(Jornada jornada, Empleado empleado) {
+
+        LocalDate fecha = jornada.getFecha();
+        LocalDate inicioSemana = fecha.with(java.time.DayOfWeek.MONDAY);
+        LocalDate finSemana = inicioSemana.plusDays(6);
+
+        List<Jornada> jornadas = jornadaRepository.findByEmpleadoAndFechaBetween(empleado, inicioSemana, finSemana);
+
+        long diasLibres = jornadas.stream()
+                .filter(j -> j.getConceptoLaboral().getNombre().equals("Día Libre"))
+                .count();
+
+        if (diasLibres > 1) {
+            throw new IllegalArgumentException("El empleado tiene más de 2 días libres en la semana.");
+        }
+    }
+
+    public void validarDiasLibresPorMes(Jornada jornada, Empleado empleado) {
+
+        LocalDate fecha = jornada.getFecha();
+        LocalDate inicioMes = fecha.withDayOfMonth(1);
+        LocalDate finMes = inicioMes.withDayOfMonth(inicioMes.lengthOfMonth());
+
+        List<Jornada> jornadas = jornadaRepository.findByEmpleadoAndFechaBetween(empleado, inicioMes, finMes);
+
+        long diasLibres = jornadas.stream()
+                .filter(j -> j.getConceptoLaboral().getNombre().equals("Día Libre"))
+                .count();
+
+
+        if (diasLibres > 5) {
+            throw new IllegalArgumentException("El empleado tiene más de 5 días libres en el mes.");
+        }
+    }
+
+    public void validarNumeroEmpleados(Jornada jornada, ConceptoLaboral conceptoLaboral) {
+
+        LocalDate fecha = jornada.getFecha();
+
+        ConceptoLaboral concepto = conceptoLaboralRepository.findByNombre(conceptoLaboral.getNombre());
+        List<Jornada> jornadas = jornadaRepository.findByConceptoLaboralAndFecha(concepto, fecha);
+
+        Set<Empleado> empleadosUnicos = new HashSet<>();
+
+        for (Jornada j : jornadas) {
+            Empleado emp = j.getEmpleado();
+            if (emp != null) {
+                empleadosUnicos.add(emp);
+            }
+        }
+
+        long empleadosRegistrados = empleadosUnicos.size();
+
+        if (empleadosRegistrados >= 2) {
+            throw new IllegalArgumentException("Ya existen 2 empleados registrados para este concepto en la fecha ingresada.");
+        }
+    }
+
+    public void validarJornadaUnicaPorEmpleado(Jornada jornada, Empleado empleado, ConceptoLaboral conceptoLaboral) {
+
+        LocalDate fecha = jornada.getFecha();
+
+        ConceptoLaboral concepto = conceptoLaboralRepository.findByNombre(conceptoLaboral.getNombre());
+
+        List<Jornada> jornadas = jornadaRepository.findByEmpleadoAndConceptoLaboralAndFecha(empleado, concepto, fecha);
+
+        if (!jornadas.isEmpty()) {
+            throw new IllegalArgumentException("El empleado ya tiene registrado una jornada con este concepto en la fecha ingresada.");
+        }
+    }
 }
