@@ -1,6 +1,7 @@
 package TP2_LabsJava.service.impl;
 
 
+import TP2_LabsJava.dto.ConceptoLaboralDTO;
 import TP2_LabsJava.dto.JornadaDTO;
 import TP2_LabsJava.dto.ResponseDTO;
 import TP2_LabsJava.entity.ConceptoLaboral;
@@ -15,6 +16,11 @@ import TP2_LabsJava.service.IJornadaService;
 import TP2_LabsJava.validator.JornadaValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class JornadaServiceImpl implements IJornadaService {
@@ -58,5 +64,53 @@ public class JornadaServiceImpl implements IJornadaService {
         Jornada savedJornada = jornadaRepository.save(jornada);
         return ResponseDTO.from(savedJornada, empleado, conceptoLaboral.getNombre());
     }
+
+    @Override
+    public List<ResponseDTO> obtenerJornada(String fechaDesde, String fechaHasta, String nroDocumento) {
+
+        LocalDate fechaDesdeParsed = jornadaValidator.validarFecha(fechaDesde, "fechaDesde");
+        LocalDate fechaHastaParsed = jornadaValidator.validarFecha(fechaHasta, "fechaHasta");
+        Integer nroDocumentoParsed = jornadaValidator.validarNroDocumento(nroDocumento);
+
+        List<Jornada> jornadas = filtrarPorFechas(fechaDesdeParsed, fechaHastaParsed);
+        jornadas = filtrarPorNroDocumento(jornadas, nroDocumentoParsed);
+        return convertirEnDTO(jornadas);
+    }
+
+    private List<Jornada> filtrarPorFechas(LocalDate fechaDesde, LocalDate fechaHasta) {
+        if (fechaDesde != null && fechaHasta != null) {
+            if (fechaDesde.isAfter(fechaHasta)) {
+                throw new IllegalArgumentException("El campo ‘fechaDesde’ no puede ser mayor que ‘fechaHasta’.");
+            }
+            return jornadaRepository.findByFechaBetween(fechaDesde, fechaHasta);
+        } else if (fechaDesde != null) {
+            return jornadaRepository.findByFechaAfter(fechaDesde);
+        } else if (fechaHasta != null) {
+            return jornadaRepository.findByFechaBefore(fechaHasta);
+        } else {
+            return jornadaRepository.findAll();
+        }
+    }
+
+    private List<Jornada> filtrarPorNroDocumento(List<Jornada> jornadas, Integer nroDocumento) {
+        if (nroDocumento != null) {
+            return jornadas.stream()
+                    .filter(jornada -> jornada.getEmpleado().getNroDocumento().equals(nroDocumento))
+                    .collect(Collectors.toList());
+        }
+        return jornadas;
+    }
+
+    private List<ResponseDTO> convertirEnDTO(List<Jornada> jornadas) {
+        return jornadas.stream().map(jornada -> {
+            Empleado empleado = jornada.getEmpleado();
+            String conceptoLaboral = jornada.getConceptoLaboral().getNombre();
+            return ResponseDTO.from(jornada, empleado, conceptoLaboral);
+        }).collect(Collectors.toList());
+    }
+
+
+
+
 
 }

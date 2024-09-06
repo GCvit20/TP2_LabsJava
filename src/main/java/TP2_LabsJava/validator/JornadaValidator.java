@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
@@ -225,4 +227,29 @@ public class JornadaValidator {
             throw new IllegalArgumentException("El empleado ya tiene registrado una jornada con este concepto en la fecha ingresada.");
         }
     }
+
+    public LocalDate validarFecha(String fecha, String nombreCampo) {
+
+        if (fecha != null && !fecha.isEmpty()) {
+            try {
+                DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                return LocalDate.parse(fecha, formato);
+            } catch (DateTimeParseException e) {
+                throw new IllegalArgumentException(String.format("El campo '%s' debe respetar el formato yyyy-MM-dd.", nombreCampo));
+            }
+        }
+        return null;
+    }
+
+    public Integer validarNroDocumento(String nroDocumento) {
+        if (nroDocumento != null && !nroDocumento.isEmpty()) {
+            try {
+                return Integer.parseInt(nroDocumento);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("El campo 'nroDocumento' solo puede contener números enteros.");
+            }
+        }
+        return null;
+    }
+
 }

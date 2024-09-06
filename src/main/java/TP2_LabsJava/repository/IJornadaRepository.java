@@ -16,5 +16,8 @@ public interface IJornadaRepository extends JpaRepository<Jornada, Long> {
     List<Jornada> findByEmpleadoAndFechaBetween(Empleado empleado, LocalDate inicioSemana, LocalDate finSemana);
     List<Jornada> findByConceptoLaboralAndFecha(ConceptoLaboral conceptoLaboral, LocalDate fecha);
     List<Jornada> findByEmpleadoAndConceptoLaboralAndFecha(Empleado empleado, ConceptoLaboral conceptoLaboral, LocalDate fecha);
+    List<Jornada> findByFechaBetween(LocalDate fechaDesde, LocalDate fechaHasta);
+    List<Jornada> findByFechaAfter(LocalDate fechaDesde);
+    List<Jornada> findByFechaBefore(LocalDate fechaDesde);
 
 }
