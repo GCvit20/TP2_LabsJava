@@ -1,16 +1,12 @@
 package TP2_LabsJava.controller;
 
 import TP2_LabsJava.dto.EmpleadoDTO;
-import TP2_LabsJava.entity.Empleado;
 import TP2_LabsJava.service.IEmpleadoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -22,20 +18,9 @@ public class EmpleadoController {
     private IEmpleadoService empleadoService;
 
     @PostMapping
-    public ResponseEntity<?> save(@Valid @RequestBody EmpleadoDTO empleadoDTO) throws URISyntaxException {
-
-            LocalDate fechaCreacion = LocalDate.now();
-
-            empleadoService.agregarEmpleado(Empleado.builder()
-                    .nombre(empleadoDTO.getNombre())
-                    .apellido(empleadoDTO.getApellido())
-                    .nroDocumento(empleadoDTO.getNroDocumento())
-                    .email(empleadoDTO.getEmail())
-                    .fechaNacimiento(empleadoDTO.getFechaNacimiento())
-                    .fechaIngreso(empleadoDTO.getFechaIngreso())
-                    .fechaCreacion(fechaCreacion)
-                    .build());
-            return ResponseEntity.created(new URI("/api/empleado/save")).build();
+    public ResponseEntity<EmpleadoDTO> save(@Valid @RequestBody EmpleadoDTO empleadoDTO) {
+        EmpleadoDTO empleadoGuardadoDTO = empleadoService.agregarEmpleado(empleadoDTO);
+        return ResponseEntity.ok(empleadoGuardadoDTO);
     }
 
     @GetMapping
@@ -52,8 +37,13 @@ public class EmpleadoController {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody EmpleadoDTO empleadoDTO) {
-
         EmpleadoDTO updatedEmpleado = empleadoService.update(id, empleadoDTO);
         return ResponseEntity.ok(updatedEmpleado);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarEmpleado(@PathVariable Long id) {
+        empleadoService.eliminarEmpleado(id);
+        return ResponseEntity.noContent().build();
     }
 }

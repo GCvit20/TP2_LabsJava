@@ -2,6 +2,7 @@ package TP2_LabsJava.service.impl;
 
 import TP2_LabsJava.dto.EmpleadoDTO;
 import TP2_LabsJava.entity.Empleado;
+import TP2_LabsJava.exceptions.EmpleadoNoEncontradoException;
 import TP2_LabsJava.repository.IEmpleadoRepository;
 import TP2_LabsJava.service.IEmpleadoService;
 import TP2_LabsJava.validator.EmpleadoValidator;
@@ -15,28 +16,31 @@ import java.util.stream.Collectors;
 public class EmpleadoServiceImpl implements IEmpleadoService {
 
     @Autowired
-    IEmpleadoRepository repository;
+    IEmpleadoRepository empleadoRepository;
 
     @Autowired
     EmpleadoValidator empleadoValidator;
 
     @Override
-    public void agregarEmpleado(Empleado empleado) {
+    public EmpleadoDTO agregarEmpleado(EmpleadoDTO empleadoDTO) {
+
+        Empleado empleado = empleadoDTO.toEntity();
 
         empleadoValidator.validarCamposObligatorios(empleado);
-        empleadoValidator.validarEdad(empleado);
+        //empleadoValidator.validarEdad(empleado);
         empleadoValidator.validarNroDocumento(empleado);
         empleadoValidator.validarEmail(empleado);
         empleadoValidator.validarFechaNacimiento(empleado);
         empleadoValidator.validarFechaIngreso(empleado);
         empleadoValidator.validarNombreYApellido(empleado);
 
-        this.repository.save(empleado);
+        Empleado savedEmpleado = this.empleadoRepository.save(empleado);
+        return savedEmpleado.toDTO();
     }
 
     @Override
     public List<EmpleadoDTO> obtenerEmpleados() {
-        List<Empleado> empleado = repository.findAll();
+        List<Empleado> empleado = empleadoRepository.findAll();
          return empleado.stream()
                 .map(Empleado::toDTO)
                 .collect(Collectors.toList());
@@ -66,14 +70,24 @@ public class EmpleadoServiceImpl implements IEmpleadoService {
 
         empleadoValidator.validarUnicidadDeNroDocumentoYEmail(empleadoDTO, id);
         empleadoValidator.validarCamposObligatorios(empleadoExistente);
-        empleadoValidator.validarEdad(empleadoExistente);
         empleadoValidator.validarFechaNacimiento(empleadoExistente);
         empleadoValidator.validarFechaIngreso(empleadoExistente);
         empleadoValidator.validarNombreYApellido(empleadoExistente);
 
-        this.repository.save(empleadoExistente);
+        this.empleadoRepository.save(empleadoExistente);
 
         return empleadoExistente.toDTO();
     }
 
+    @Override
+    public void eliminarEmpleado(Long id) {
+
+        empleadoValidator.validarJornadasAsociadas(id);
+
+        if (!empleadoRepository.existsById(id)) {
+            throw new EmpleadoNoEncontradoException(id);
+        }
+
+        empleadoRepository.deleteById(id);
+    }
 }

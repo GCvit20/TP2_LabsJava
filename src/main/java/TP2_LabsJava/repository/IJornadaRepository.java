@@ -4,9 +4,6 @@ import TP2_LabsJava.entity.ConceptoLaboral;
 import TP2_LabsJava.entity.Empleado;
 import TP2_LabsJava.entity.Jornada;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -19,5 +16,6 @@ public interface IJornadaRepository extends JpaRepository<Jornada, Long> {
     List<Jornada> findByFechaBetween(LocalDate fechaDesde, LocalDate fechaHasta);
     List<Jornada> findByFechaAfter(LocalDate fechaDesde);
     List<Jornada> findByFechaBefore(LocalDate fechaDesde);
+    boolean existsByEmpleadoId(Long empleadoId);
 
 }

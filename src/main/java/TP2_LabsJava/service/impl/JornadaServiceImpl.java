@@ -1,9 +1,8 @@
 package TP2_LabsJava.service.impl;
 
 
-import TP2_LabsJava.dto.ConceptoLaboralDTO;
 import TP2_LabsJava.dto.JornadaDTO;
-import TP2_LabsJava.dto.ResponseDTO;
+import TP2_LabsJava.dto.JornadaResponse;
 import TP2_LabsJava.entity.ConceptoLaboral;
 import TP2_LabsJava.entity.Empleado;
 import TP2_LabsJava.entity.Jornada;
@@ -16,9 +15,7 @@ import TP2_LabsJava.service.IJornadaService;
 import TP2_LabsJava.validator.JornadaValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +35,7 @@ public class JornadaServiceImpl implements IJornadaService {
     JornadaValidator jornadaValidator;
 
     @Override
-    public ResponseDTO agregarJornada(JornadaDTO jornadaDTO) {
+    public JornadaResponse agregarJornada(JornadaDTO jornadaDTO) {
 
         Jornada jornada = jornadaDTO.toEntity();
         jornadaValidator.validarCamposObligatorios(jornada);
@@ -62,11 +59,11 @@ public class JornadaServiceImpl implements IJornadaService {
         jornadaValidator.validarJornadaUnicaPorEmpleado(jornada, empleado, conceptoLaboral);
 
         Jornada savedJornada = jornadaRepository.save(jornada);
-        return ResponseDTO.from(savedJornada, empleado, conceptoLaboral.getNombre());
+        return JornadaResponse.from(savedJornada, empleado, conceptoLaboral.getNombre());
     }
 
     @Override
-    public List<ResponseDTO> obtenerJornada(String fechaDesde, String fechaHasta, String nroDocumento) {
+    public List<JornadaResponse> obtenerJornada(String fechaDesde, String fechaHasta, String nroDocumento) {
 
         LocalDate fechaDesdeParsed = jornadaValidator.validarFecha(fechaDesde, "fechaDesde");
         LocalDate fechaHastaParsed = jornadaValidator.validarFecha(fechaHasta, "fechaHasta");
@@ -101,11 +98,11 @@ public class JornadaServiceImpl implements IJornadaService {
         return jornadas;
     }
 
-    private List<ResponseDTO> convertirEnDTO(List<Jornada> jornadas) {
+    private List<JornadaResponse> convertirEnDTO(List<Jornada> jornadas) {
         return jornadas.stream().map(jornada -> {
             Empleado empleado = jornada.getEmpleado();
             String conceptoLaboral = jornada.getConceptoLaboral().getNombre();
-            return ResponseDTO.from(jornada, empleado, conceptoLaboral);
+            return JornadaResponse.from(jornada, empleado, conceptoLaboral);
         }).collect(Collectors.toList());
     }
 

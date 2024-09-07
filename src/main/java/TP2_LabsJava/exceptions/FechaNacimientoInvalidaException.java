@@ -7,9 +7,9 @@ public class FechaNacimientoInvalidaException extends RuntimeException {
     private LocalDate fechaNacimiento;
     private LocalDate fechaActual;
 
-    public FechaNacimientoInvalidaException(LocalDate fechaActual) {
-        this.fechaActual = fechaActual;
-        this.fechaNacimiento = LocalDate.now();
+    public FechaNacimientoInvalidaException(LocalDate fechaNacimiento) {
+        this.fechaActual = LocalDate.now();;
+        this.fechaNacimiento = fechaNacimiento;
     }
 
     public LocalDate getFechaNacimiento() {

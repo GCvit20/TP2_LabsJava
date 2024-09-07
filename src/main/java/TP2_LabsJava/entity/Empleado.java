@@ -4,6 +4,7 @@ import TP2_LabsJava.dto.EmpleadoDTO;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -32,9 +33,17 @@ public class Empleado {
     @Column(name = "nro_ingreso")
     private LocalDate fechaIngreso;
     @Column(name = "fecha_creacion")
-    private LocalDate fechaCreacion;
+    private LocalDateTime fechaCreacion;
+
+    @PrePersist
+    public void prePersist() {
+        if (fechaCreacion == null) {
+            fechaCreacion = LocalDateTime.now();
+        }
+    }
 
     public EmpleadoDTO toDTO() {
+
         EmpleadoDTO dto = new EmpleadoDTO();
         dto.setId(this.getId());
         dto.setNombre(this.getNombre());
@@ -43,7 +52,7 @@ public class Empleado {
         dto.setNroDocumento((this.getNroDocumento()));
         dto.setFechaNacimiento(this.getFechaNacimiento());
         dto.setFechaIngreso(this.getFechaIngreso());
-        dto.setFechaCreacion(this.getFechaCreacion());
+        dto.setFechaCreacion(this.getFechaCreacion() != null ? this.getFechaCreacion().toLocalDate() : null);
         return dto;
     }
 

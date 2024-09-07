@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
+
 
 @Data
 @Builder
@@ -32,7 +32,6 @@ public class EmpleadoDTO {
         empleado.setNroDocumento((this.getNroDocumento()));
         empleado.setFechaNacimiento(this.getFechaNacimiento());
         empleado.setFechaIngreso(this.getFechaIngreso());
-        empleado.setFechaCreacion(this.getFechaCreacion());
         return empleado;
     }
 }

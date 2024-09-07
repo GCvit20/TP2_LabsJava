@@ -25,9 +25,6 @@ public class JornadaValidator {
     private IJornadaRepository jornadaRepository;
 
     @Autowired
-    private IEmpleadoRepository empleadoRepository;
-
-    @Autowired
     private IConceptoLaboralRepository conceptoLaboralRepository;
 
     public void validarCamposObligatorios(Jornada jornada) {
