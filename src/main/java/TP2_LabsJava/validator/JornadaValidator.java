@@ -126,32 +126,32 @@ public class JornadaValidator {
         }
     }
 
-    public void validarMaximoTurnos(Jornada jornada) {
-        Empleado empleado = jornada.getEmpleado();
+    public void validarMaximoTurnos(Jornada jornada, Empleado empleado, ConceptoLaboral conceptoLaboral) {
+
         LocalDate fecha = jornada.getFecha();
-
-
         LocalDate inicioSemana = fecha.with(DayOfWeek.MONDAY);
         LocalDate finSemana = fecha.with(DayOfWeek.SUNDAY);
 
         List<Jornada> jornadasDeLaSemana = jornadaRepository.findByEmpleadoAndFechaBetween(empleado, inicioSemana, finSemana);
 
-        long cantidadTurnosExtra = jornadasDeLaSemana.stream()
-                .filter(nuevaJornada -> nuevaJornada.getConceptoLaboral().getNombre().equalsIgnoreCase("Turno Extra"))
-                .count();
+        if (conceptoLaboral.getNombre().equals("Turno Normal")) {
+            long cantidadTurnosNormales = jornadasDeLaSemana.stream()
+                    .filter(nuevaJornada -> "Turno Normal".equals(nuevaJornada.getConceptoLaboral().getNombre()))
+                    .count();
 
-        long cantidadTurnosNormales = jornadasDeLaSemana.stream()
-                .filter(nuevaJornada -> nuevaJornada.getConceptoLaboral().getNombre().equalsIgnoreCase("Turno Normal"))
-                .count();
+            if (cantidadTurnosNormales >= 5) {
+                throw new IllegalArgumentException("El empleado ingresado ya cuenta con 5 turnos normales esta semana.");
+            }
+        } else if (conceptoLaboral.getNombre().equals("Turno Extra")) {
+            long cantidadTurnosExtra = jornadasDeLaSemana.stream()
+                    .filter(nuevaJornada -> "Turno Extra".equals(nuevaJornada.getConceptoLaboral().getNombre()))
+                    .count();
 
-
-        if (cantidadTurnosExtra >= 3) {
-            throw new IllegalArgumentException("El empleado ingresado ya cuenta con 3 turnos extra esta semana.");
+            if (cantidadTurnosExtra >= 3) {
+                throw new IllegalArgumentException("El empleado ingresado ya cuenta con 3 turnos extra esta semana.");
+            }
         }
 
-        if (cantidadTurnosNormales >= 5) {
-            throw new IllegalArgumentException("El empleado ingresado ya cuenta con 5 turnos normales esta semana.");
-        }
     }
 
     public void validarDiasLibres(Jornada jornada, Empleado empleado) {

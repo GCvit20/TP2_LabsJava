@@ -4,7 +4,6 @@ import TP2_LabsJava.dto.ConceptoLaboralDTO;
 import TP2_LabsJava.entity.ConceptoLaboral;
 import TP2_LabsJava.repository.IConceptoLaboralRepository;
 import TP2_LabsJava.service.IConceptoLaboralService;
-import TP2_LabsJava.validator.EmpleadoValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Collections;
@@ -16,9 +15,6 @@ public class ConceptoLabotalServiceImpl implements IConceptoLaboralService {
 
     @Autowired
     IConceptoLaboralRepository repository;
-
-    @Autowired
-    EmpleadoValidator empleadoValidator;
 
     @Override
     public List<ConceptoLaboralDTO> obtenerConceptosLaborales(Long id, String nombre) {

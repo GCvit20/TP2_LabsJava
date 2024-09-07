@@ -27,7 +27,6 @@ public class EmpleadoServiceImpl implements IEmpleadoService {
         Empleado empleado = empleadoDTO.toEntity();
 
         empleadoValidator.validarCamposObligatorios(empleado);
-        //empleadoValidator.validarEdad(empleado);
         empleadoValidator.validarNroDocumento(empleado);
         empleadoValidator.validarEmail(empleado);
         empleadoValidator.validarFechaNacimiento(empleado);

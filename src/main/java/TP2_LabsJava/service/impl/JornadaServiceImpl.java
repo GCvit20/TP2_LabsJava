@@ -52,7 +52,7 @@ public class JornadaServiceImpl implements IJornadaService {
         jornadaValidator.validarHorasSemanales(jornada, empleado);
         jornadaValidator.validarHorasMensuales(jornada, empleado);
         jornadaValidator.validarDiaLibreEnFecha(jornada, empleado, conceptoLaboral);
-        jornadaValidator.validarMaximoTurnos(jornada);
+        jornadaValidator.validarMaximoTurnos(jornada, empleado, conceptoLaboral);
         jornadaValidator.validarDiasLibres(jornada, empleado);
         jornadaValidator.validarDiasLibresPorMes(jornada, empleado);
         jornadaValidator.validarNumeroEmpleados(jornada, conceptoLaboral);
