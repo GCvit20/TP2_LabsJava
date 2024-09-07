@@ -1,6 +1,6 @@
 <h1 align = "center">TURNOS ROTATIVOS APIREST</h1>
 <p align="center">
-<img src="https://i.ibb.co/vJJL0Kk/077baea4-9570-4c9f-8807-03278f5c4df8.jpg" style="max-width: 100%; display: inline-block;" />
+<img src="https://i.postimg.cc/189gJX7q/077baea4-9570-4c9f-8807-03278f5c4df8.jpg" style="max-width: 100%; display: inline-block;" />
 </p>
 
 Este proyecto implementa un CRUD básico utilizando las siguientes tecnologías:
